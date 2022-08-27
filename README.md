@@ -2,13 +2,16 @@
 ## Current Features
 - Add Website for configuring String options. Configuration will automatically be saved using LittleFS and persist restarts.
 
+## Planned Features
+- Wifi Management
+- Setup of OTA Updates via the HTTP Server
+
 ## Example Usage
 ```c
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
-#include <ESP8266HTTPUpdateServer.h>
 #include <ESPTools.h>
 
 ESP8266WebServer server(80);
