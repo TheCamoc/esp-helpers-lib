@@ -13,7 +13,7 @@ static const char configIndex[] PROGMEM =
      </head>
      <body>
      <form method='POST' action='' enctype='multipart/form-data'>
-         %s
+         {{inputlist}}
          <input type='submit' value='Save'>
      </form>
      </body>
@@ -121,16 +121,17 @@ void ESPToolsClass::addConfigString(std::string name)
 
 void ESPToolsClass::handleConfigGET()
 {
-    char resultHTML[1000];
     char inputTemp[100];
-    std::string inputList;
+    String inputList;
     for (std::pair<const std::string, std::string> pair : config)
     {
         sprintf(inputTemp, configStringInput, pair.first.c_str(), pair.first.c_str(), pair.second.c_str());
-        inputList.append(inputTemp);
+        inputList += inputTemp;
     }
-    sprintf(resultHTML, configIndex, inputList.c_str());
-    server->send(200, "text/html", resultHTML);
+    //sprintf(resultHTML, configIndex, inputList.c_str());
+    String body = configIndex;
+    body.replace("{{inputlist}}", inputList);
+    server->send(200, "text/html", body);
 }
 
 void ESPToolsClass::handleConfigPOST()
@@ -150,6 +151,44 @@ void ESPToolsClass::log(std::string message)
 {
     Serial.print("[ESPTools] ");
     Serial.println(message.c_str());
+}
+
+void ESPToolsClass::wifiAutoConnect()
+{
+    addConfigString("ssid");
+    addConfigString("password");
+
+    if (config["ssid"] != "") {
+        if (wifiConnect(config["ssid"].c_str(), config["password"].c_str(), 30000)) {
+            log("WiFi Connected");
+            return;
+        }
+    }
+
+    log("Starting AP and Captive Portal");
+
+    enableAP();
+    DNSServer dnsServer;
+    dnsServer.start(53, "*", IPAddress(172,0,0,1));
+
+    server->onNotFound([this] () {
+        server->sendHeader("Location", String("http://") + server->client().localIP().toString() + String("/config"));
+        server->send(302, "text/plain", "");
+        server->client().stop();
+    });
+    server->begin();
+
+    std::string startSSID = config["ssid"];
+    std::string startPassword = config["password"];
+
+    while(true) {
+        dnsServer.processNextRequest();
+        server->handleClient();
+        delay(100);
+        if (config["ssid"].compare(startSSID) != 0 || config["password"].compare(startPassword) != 0) {
+            ESP.restart();
+        }
+    }
 }
 
 ESPToolsClass ESPTools;

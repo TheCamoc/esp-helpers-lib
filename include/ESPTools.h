@@ -5,6 +5,8 @@
 #include <LittleFS.h>
 #include <string>
 #include <map>
+#include <WifiManagement.h>
+#include <DNSServer.h>
 
 #ifdef ESP8266
     #include <ESP8266WebServer.h>
@@ -25,6 +27,7 @@ public:
     int saveConfig();
     void deleteConfig();
     void addConfigString(std::string name);
+    void wifiAutoConnect();
     
     std::map<std::string, std::string> config;
 private:
