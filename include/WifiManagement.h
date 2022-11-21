@@ -7,8 +7,8 @@
 #include<WiFi.h>
 #endif
 
-bool wifiConnect(const char* ssid, const char* password, int timeoutms);
-
+bool wifiConnect(const char* ssid, const char* password, const char* hostname, int timeoutms);
 void enableAP();
+void trySetHostname(const char* hostname);
 
 #endif

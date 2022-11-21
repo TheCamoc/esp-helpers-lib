@@ -41,7 +41,7 @@ private:
 
     void handleConfigGET();
     void handleConfigPOST();
-    void log(std::string message);
+    void log(String message);
     void setupFS();
 
    

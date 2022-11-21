@@ -147,7 +147,7 @@ void ESPToolsClass::handleConfigPOST()
     server->send(302, "text/plain", "");
 }
 
-void ESPToolsClass::log(std::string message)
+void ESPToolsClass::log(String message)
 {
     Serial.print("[ESPTools] ");
     Serial.println(message.c_str());
@@ -155,12 +155,14 @@ void ESPToolsClass::log(std::string message)
 
 void ESPToolsClass::wifiAutoConnect()
 {
+    addConfigString("hostname");
     addConfigString("ssid");
     addConfigString("password");
 
     if (config["ssid"] != "") {
-        if (wifiConnect(config["ssid"].c_str(), config["password"].c_str(), 30000)) {
-            log("WiFi Connected");
+        if (wifiConnect(config["ssid"].c_str(), config["password"].c_str(), config["hostname"].c_str(), 30000)) {
+            log("WiFi connected to " + WiFi.SSID());
+            log("IP address: " + WiFi.localIP().toString());
             return;
         }
     }
