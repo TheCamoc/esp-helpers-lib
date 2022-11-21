@@ -26,10 +26,10 @@ public:
     int loadConfig();
     int saveConfig();
     void deleteConfig();
-    void addConfigString(std::string name);
+    void addConfigString(String name);
     void wifiAutoConnect();
     
-    std::map<std::string, std::string> config;
+    std::map<String, String> config;
 private:
     #ifdef ESP8266
     ESP8266WebServer *server;

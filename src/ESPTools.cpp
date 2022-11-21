@@ -78,9 +78,7 @@ int ESPToolsClass::loadConfig()
     JsonObject obj = jsonDoc.as<JsonObject>();
     for (JsonPair p : obj)
     {
-        p.key();
-        p.value();
-        config[p.key().c_str()] = p.value().as<const char*>();
+        config[p.key().c_str()] = p.value().as<String>();
     }
 
     configFile.close();
@@ -98,7 +96,7 @@ int ESPToolsClass::saveConfig()
     }
 
     DynamicJsonDocument jsonDoc = DynamicJsonDocument(1024);
-    for (std::pair<const std::string, std::string> pair : config)
+    for (std::pair<const String, String> pair : config)
     {
         jsonDoc[pair.first] = pair.second;
     }
@@ -114,7 +112,7 @@ void ESPToolsClass::deleteConfig()
     fs.remove("/config.json");
 }
 
-void ESPToolsClass::addConfigString(std::string name)
+void ESPToolsClass::addConfigString(String name)
 {
     config[name];
 }
@@ -123,12 +121,12 @@ void ESPToolsClass::handleConfigGET()
 {
     char inputTemp[100];
     String inputList;
-    for (std::pair<const std::string, std::string> pair : config)
+    for (std::pair<const String, String> pair : config)
     {
         sprintf(inputTemp, configStringInput, pair.first.c_str(), pair.first.c_str(), pair.second.c_str());
         inputList += inputTemp;
     }
-    //sprintf(resultHTML, configIndex, inputList.c_str());
+
     String body = configIndex;
     body.replace("{{inputlist}}", inputList);
     server->send(200, "text/html", body);
@@ -136,9 +134,9 @@ void ESPToolsClass::handleConfigGET()
 
 void ESPToolsClass::handleConfigPOST()
 {
-    for (std::pair<const std::string, std::string> pair : config)
+    for (std::pair<const String, String> pair : config)
     {
-        config[pair.first] = server->arg(pair.first.c_str()).c_str();
+        config[pair.first] = server->arg(pair.first);
     }
 
     saveConfig();
@@ -149,18 +147,17 @@ void ESPToolsClass::handleConfigPOST()
 
 void ESPToolsClass::log(String message)
 {
-    Serial.print("[ESPTools] ");
-    Serial.println(message.c_str());
+    Serial.println("[ESPTools] " + message);
 }
 
 void ESPToolsClass::wifiAutoConnect()
 {
-    addConfigString("hostname");
     addConfigString("ssid");
     addConfigString("password");
-
-    if (config["ssid"] != "") {
-        if (wifiConnect(config["ssid"].c_str(), config["password"].c_str(), config["hostname"].c_str(), 30000)) {
+    addConfigString("hostname");
+    
+    if (!config["ssid"].equals("")) {
+        if (wifiConnect(config["ssid"], config["password"], config["hostname"], 30000)) {
             log("WiFi connected to " + WiFi.SSID());
             log("IP address: " + WiFi.localIP().toString());
             return;
@@ -180,14 +177,14 @@ void ESPToolsClass::wifiAutoConnect()
     });
     server->begin();
 
-    std::string startSSID = config["ssid"];
-    std::string startPassword = config["password"];
+    String startSSID = config["ssid"];
+    String startPassword = config["password"];
 
     while(true) {
         dnsServer.processNextRequest();
         server->handleClient();
         delay(100);
-        if (config["ssid"].compare(startSSID) != 0 || config["password"].compare(startPassword) != 0) {
+        if (!config["ssid"].equals(startSSID) || !config["password"].equals(startPassword)) {
             ESP.restart();
         }
     }

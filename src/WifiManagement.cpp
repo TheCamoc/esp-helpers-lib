@@ -1,10 +1,10 @@
 #include <WifiManagement.h>
 
-bool wifiConnect(const char* ssid, const char* password, const char* hostname, int timeoutms)
+bool wifiConnect(String ssid, String password, String hostname, int timeoutms)
 {
     WiFi.mode(WIFI_STA);
     trySetHostname(hostname);
-    WiFi.begin(ssid, password);
+    WiFi.begin(ssid.c_str(), password.c_str());
     
     int retries = 0;
     while(WiFi.status() != WL_CONNECTED) {
@@ -26,9 +26,9 @@ void enableAP()
     WiFi.softAP("ESP Setup");
 }
 
-void trySetHostname(const char* hostname) {
-    if (strcmp(hostname, "") != 0) {
-        WiFi.setHostname(hostname);
+void trySetHostname(String hostname) {
+    if (!hostname.equals("")) {
+        WiFi.setHostname(hostname.c_str());
         WiFi.hostname(hostname);
     }
 }
