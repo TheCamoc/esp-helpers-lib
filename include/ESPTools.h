@@ -6,10 +6,12 @@
 #include <string>
 #include <map>
 #include <WifiManagement.h>
+#include <UpdateManagement.h>
 #include <DNSServer.h>
 
 #ifdef ESP8266
     #include <ESP8266WebServer.h>
+    #include <ESP8266HTTPUpdateServer.h>
 #elif ESP32
     #include <WebServer.h>
 #endif
@@ -28,11 +30,13 @@ public:
     void deleteConfig();
     void addConfigString(String name);
     void wifiAutoConnect();
+    void setupHTTPUpdates();
     
     std::map<String, String> config;
 private:
     #ifdef ESP8266
     ESP8266WebServer *server;
+    ESP8266HTTPUpdateServer httpUpdater;
     fs::FS fs = LittleFS;
     #elif ESP32
     WebServer *server;

@@ -43,6 +43,15 @@ void ESPToolsClass::begin(WebServer *s)
                { fs.format(); server->send(200, "text/plain", "Ok"); });
 }
 
+void ESPToolsClass::setupHTTPUpdates()
+{
+#ifdef ESP8266
+    httpUpdater.setup(server);
+#elif ESP32
+    setupESP32Updates(server);
+#endif
+}
+
 void ESPToolsClass::setupFS()
 {
     if (!fs.begin())
