@@ -5,7 +5,8 @@ bool wifiConnect(String ssid, String password, String hostname, int timeoutms)
     WiFi.mode(WIFI_STA);
     trySetHostname(hostname);
     WiFi.begin(ssid.c_str(), password.c_str());
-    
+    WiFi.setAutoReconnect(true);
+
     int retries = 0;
     while(WiFi.status() != WL_CONNECTED) {
         delay(100);
@@ -15,7 +16,6 @@ bool wifiConnect(String ssid, String password, String hostname, int timeoutms)
         }
     }
 
-    WiFi.setAutoReconnect(true);
     return true;
 }
 
@@ -23,7 +23,8 @@ void enableAP()
 {
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(IPAddress(172,0,0,1), IPAddress(172,0,0,1), IPAddress(255,255,255,0));
-    WiFi.softAP("ESP Setup");
+    String apName = String("ESP Setup ") + WiFi.macAddress().substring(9);
+    WiFi.softAP(apName.c_str());
 }
 
 void trySetHostname(String hostname) {
