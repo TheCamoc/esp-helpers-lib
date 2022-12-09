@@ -8,6 +8,7 @@
 #include <WifiManagement.h>
 #include <UpdateManagement.h>
 #include <DNSServer.h>
+#include <HTMLTemplates.h>
 
 #ifdef ESP8266
     #include <ESP8266WebServer.h>
@@ -42,7 +43,7 @@ private:
     WebServer *server;
     fs::LittleFSFS fs = LittleFS;
     #endif
-
+    void handleConfigJSONGet();
     void handleConfigGET();
     void handleConfigPOST();
     void log(String message);

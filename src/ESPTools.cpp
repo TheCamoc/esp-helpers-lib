@@ -1,28 +1,5 @@
 #include <ESPTools.h>
 
-static const char configIndex[] PROGMEM =
-    R"(<!DOCTYPE html>
-     <html lang='en'>
-     <head>
-        <title>ESPTools Config Page</title>
-         <meta charset='utf-8'>
-         <meta name='viewport' content='width=device-width,initial-scale=1'/>
-         <style>
-            body { background-color: #313131; font-family: Arial, Helvetica, Sans-Serif; color: #fff; }
-        </style>
-     </head>
-     <body>
-     <form method='POST' action='' enctype='multipart/form-data'>
-         {{inputlist}}
-         <input type='submit' value='Save'>
-     </form>
-     </body>
-     </html>)";
-
-static const char configStringInput[] PROGMEM = R"(
-%s: <input type='text' name='%s' value='%s'><br><br>
-)";
-
 #ifdef ESP8266
 void ESPToolsClass::begin(ESP8266WebServer *s)
 #elif ESP32
@@ -35,6 +12,9 @@ void ESPToolsClass::begin(WebServer *s)
     server = s;
     server->on("/config", HTTP_GET, [&]()
                { handleConfigGET(); });
+
+    server->on("/configjson", HTTP_GET, [&]()
+               { handleConfigJSONGet(); });
 
     server->on("/config", HTTP_POST, [&]()
                { handleConfigPOST(); });
@@ -130,19 +110,22 @@ void ESPToolsClass::addConfigString(String name)
     config[name];
 }
 
-void ESPToolsClass::handleConfigGET()
+void ESPToolsClass::handleConfigJSONGet()
 {
-    char inputTemp[100];
-    String inputList;
+    DynamicJsonDocument jsonDoc = DynamicJsonDocument(1024);
     for (std::pair<const String, String> pair : config)
     {
-        sprintf(inputTemp, configStringInput, pair.first.c_str(), pair.first.c_str(), pair.second.c_str());
-        inputList += inputTemp;
+        jsonDoc[pair.first] = pair.second;
     }
+    
+    String response;
+    serializeJson(jsonDoc, response);
+    server->send(200, "application/json", response);
+}
 
-    String body = configIndex;
-    body.replace("{{inputlist}}", inputList);
-    server->send(200, "text/html", body);
+void ESPToolsClass::handleConfigGET()
+{
+    server->send(200, "text/html", FPSTR(CONFIG_HTML));
 }
 
 void ESPToolsClass::handleConfigPOST()
