@@ -21,6 +21,7 @@ const char CONFIG_HTML[] PROGMEM =
             background: rgb(255 255 255 / 10%);
             padding: 16px;
             border-radius: 16px;
+            max-width: 500px;
         }
 
         input[type=text],
