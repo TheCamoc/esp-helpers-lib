@@ -49,6 +49,21 @@ const char CONFIG_HTML[] PROGMEM =
         input[type=submit]:hover {
             background-color: #45a049;
         }
+
+        a {
+            width: 100%;
+            background-color: #b44444;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        p {
+            padding: 12px 0;
+        }
     </style>
 </head>
 
@@ -56,6 +71,12 @@ const char CONFIG_HTML[] PROGMEM =
     <div>
         <form method='POST' id='form' action='' enctype='multipart/form-data'>
         </form>
+        <p>
+            <a href="restart">Restart ESP</a>
+        </p>
+        <p>
+            <a href="formatfs">Format Filesystem</a>
+        </p>
     </div>
 </body>
 
