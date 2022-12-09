@@ -54,9 +54,13 @@ void ESPToolsClass::setupHTTPUpdates()
 
 void ESPToolsClass::setupFS()
 {
-    if (!fs.begin(true))
+    if (!fs.begin())
     {
-        log("Error loading LittleFS.");
+        // on fail try formatting then loading again
+        fs.format();
+        if (!fs.begin()) {
+            log("Error loading LittleFS.");
+        }
     }
 }
 
