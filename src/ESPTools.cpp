@@ -21,6 +21,12 @@ void ESPToolsClass::begin(WebServer *s)
 
     server->on("/formatfs", HTTP_GET, [&]()
                { fs.format(); server->send(200, "text/plain", "Ok"); });
+    
+    server->on("/restart", [&]()
+              {
+        server->send(200, "text/plain", "Ok");
+        delay(500);
+        ESP.restart(); });
 }
 
 void ESPToolsClass::setupHTTPUpdates()
