@@ -169,6 +169,7 @@ void ESPToolsClass::wifiAutoConnect()
     log("Starting AP and Captive Portal");
 
     enableAP();
+    // Captive Portal Stuff
     DNSServer dnsServer;
     dnsServer.start(53, "*", IPAddress(172,0,0,1));
 
@@ -181,13 +182,22 @@ void ESPToolsClass::wifiAutoConnect()
 
     String startSSID = config["ssid"];
     String startPassword = config["password"];
-
+    
+    // Try connecting just in case connection loss is temporary
+    WiFi.begin(startSSID, startPassword);
     while(true) {
         dnsServer.processNextRequest();
         server->handleClient();
         delay(100);
         if (!config["ssid"].equals(startSSID) || !config["password"].equals(startPassword)) {
-            ESP.restart();
+            WiFi.begin(config["ssid"], config["password"]);
+            startSSID = config["ssid"];
+            startPassword = config["password"];
+        }
+        if (WiFi.status() == WL_CONNECTED && wifiConnect(startSSID, startPassword, config["hostname"], 30000)) {
+            return;
+        } else {
+            enableAP();
         }
     }
 }

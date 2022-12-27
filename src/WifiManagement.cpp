@@ -21,7 +21,7 @@ bool wifiConnect(String ssid, String password, String hostname, int timeoutms)
 
 void enableAP()
 {
-    WiFi.mode(WIFI_AP);
+    WiFi.mode(WIFI_AP_STA);
     WiFi.softAPConfig(IPAddress(172,0,0,1), IPAddress(172,0,0,1), IPAddress(255,255,255,0));
     String apName = String("ESP Setup ") + WiFi.macAddress().substring(9);
     WiFi.softAP(apName.c_str());
