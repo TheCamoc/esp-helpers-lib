@@ -184,13 +184,13 @@ void ESPToolsClass::wifiAutoConnect()
     String startPassword = config["password"];
     
     // Try connecting just in case connection loss is temporary
-    WiFi.begin(startSSID, startPassword);
+    WiFi.begin(startSSID.c_str(), startPassword.c_str());
     while(true) {
         dnsServer.processNextRequest();
         server->handleClient();
         delay(100);
         if (!config["ssid"].equals(startSSID) || !config["password"].equals(startPassword)) {
-            WiFi.begin(config["ssid"], config["password"]);
+            WiFi.begin(config["ssid"].c_str(), config["password"].c_str());
             startSSID = config["ssid"];
             startPassword = config["password"];
         }
