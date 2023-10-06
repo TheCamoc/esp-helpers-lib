@@ -1,4 +1,4 @@
-# ESP Tools
+# ESP Helpers
 ## Compatibility
 Compatible with ESP8266 and ESP32 using Arduino and PlatformIO
 
