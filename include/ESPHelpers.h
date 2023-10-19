@@ -10,7 +10,7 @@
 #include <UpdateManagement.h>
 #include <DNSServer.h>
 #include <HTMLTemplates.h>
-#include <MQTTManagement.h>
+#include <PubSubClient.h>
 
 #ifdef ESP8266
 #include <ESP8266WebServer.h>
@@ -56,11 +56,13 @@ private:
     void handleConfigPOST();
     void log(String message);
     void setupFS();
+    void mqttReconnect(int port = 1883);
 
     String wifiAPPassword = "";
     unsigned long wifiLastConnected = 0;
 
     bool mqttServerChanged = false;
+    WiFiClient wifiClient;
 };
 
 extern ESPHelpersClass ESPHelpers;

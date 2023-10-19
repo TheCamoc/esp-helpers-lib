@@ -24,6 +24,7 @@ const char CONFIG_HTML[] PROGMEM =
             max-width: 500px;
         }
 
+        input[type=password],
         input[type=text],
         select {
             width: 100%;

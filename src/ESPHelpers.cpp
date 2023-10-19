@@ -1,9 +1,9 @@
 #include <ESPHelpers.h>
 
 #ifdef ESP8266
-void ESPHelpersClass::begin(ESP8266WebServer *s, String apPassword = "")
+void ESPHelpersClass::begin(ESP8266WebServer *s, String apPassword)
 #elif ESP32
-void ESPHelpersClass::begin(WebServer *s, String apPassword = "")
+void ESPHelpersClass::begin(WebServer *s, String apPassword)
 #endif
 {
     wifiAPPassword = apPassword;
@@ -248,7 +248,6 @@ void ESPHelpersClass::wifiCheck()
 
 void ESPHelpersClass::enableMQTT()
 {
-    WiFiClient wifiClient;
     mqtt.setClient(wifiClient);
     addConfigString("mqtt_server");
 }
@@ -257,15 +256,36 @@ void ESPHelpersClass::mqttLoop()
 {
     if (!mqtt.connected() && config["mqtt_server"] != "" && WiFi.status() == WL_CONNECTED)
     {
-        mqttReconnect(mqtt, config["mqtt_server"]);
+        mqttReconnect();
     } 
     else if (mqttServerChanged)
     {
         mqttServerChanged = false;
         log("Reconnecting MQTT because of server change");
-        mqttReconnect(mqtt, config["mqtt_server"]);
+        mqtt.disconnect();
+        mqttReconnect();
     }
     mqtt.loop();
+}
+
+void ESPHelpersClass::mqttReconnect(int port)
+{
+    Serial.print("[ESPHelpers] Attempting MQTT connection... ");
+    String clientId = "ESPClient-";
+    clientId += String(random(0xffff), HEX);
+
+    mqtt.setServer(config["mqtt_server"].c_str(), port);
+    if (mqtt.connect(clientId.c_str()))
+    {
+        Serial.println("connected");
+    }
+    else
+    {
+        Serial.print("failed, rc=");
+        Serial.print(mqtt.state());
+        Serial.println(" trying again");
+        delay(100);
+    }
 }
 
 ESPHelpersClass ESPHelpers;
