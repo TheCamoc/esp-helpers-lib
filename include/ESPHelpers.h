@@ -1,5 +1,5 @@
-#ifndef __ESPTools__
-#define __ESPTools__
+#ifndef __ESPHelpers__
+#define __ESPHelpers__
 
 #include <ArduinoJSON.h>
 #include <LittleFS.h>
@@ -17,7 +17,7 @@
 #include <WebServer.h>
 #endif
 
-class ESPToolsClass
+class ESPHelpersClass
 {
 public:
 #ifdef ESP8266
@@ -51,5 +51,5 @@ private:
     void setupFS();
 };
 
-extern ESPToolsClass ESPTools;
+extern ESPHelpersClass ESPHelpers;
 #endif

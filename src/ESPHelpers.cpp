@@ -1,9 +1,9 @@
-#include <ESPTools.h>
+#include <ESPHelpers.h>
 
 #ifdef ESP8266
-void ESPToolsClass::begin(ESP8266WebServer *s)
+void ESPHelpersClass::begin(ESP8266WebServer *s)
 #elif ESP32
-void ESPToolsClass::begin(WebServer *s)
+void ESPHelpersClass::begin(WebServer *s)
 #endif
 {
     setupFS();
@@ -29,7 +29,7 @@ void ESPToolsClass::begin(WebServer *s)
         ESP.restart(); });
 }
 
-void ESPToolsClass::setupHTTPUpdates()
+void ESPHelpersClass::setupHTTPUpdates()
 {
 #ifdef ESP8266
     httpUpdater.setup(server);
@@ -38,7 +38,7 @@ void ESPToolsClass::setupHTTPUpdates()
 #endif
 }
 
-void ESPToolsClass::setupFS()
+void ESPHelpersClass::setupFS()
 {
     if (fs.begin())
     {
@@ -53,7 +53,7 @@ void ESPToolsClass::setupFS()
     }
 }
 
-int ESPToolsClass::loadConfig()
+int ESPHelpersClass::loadConfig()
 {
     // Check if LittleFS works and if file exists
     if (!fs.exists("/config.json"))
@@ -88,7 +88,7 @@ int ESPToolsClass::loadConfig()
     return 1;
 }
 
-int ESPToolsClass::saveConfig()
+int ESPHelpersClass::saveConfig()
 {
     File configFile = fs.open("/config.json", "w");
     if (!configFile)
@@ -109,17 +109,17 @@ int ESPToolsClass::saveConfig()
     return 1;
 }
 
-void ESPToolsClass::deleteConfig()
+void ESPHelpersClass::deleteConfig()
 {
     fs.remove("/config.json");
 }
 
-void ESPToolsClass::addConfigString(String name)
+void ESPHelpersClass::addConfigString(String name)
 {
     config[name];
 }
 
-void ESPToolsClass::handleConfigJSONGet()
+void ESPHelpersClass::handleConfigJSONGet()
 {
     DynamicJsonDocument jsonDoc = DynamicJsonDocument(1024);
     for (std::pair<const String, String> pair : config)
@@ -132,12 +132,12 @@ void ESPToolsClass::handleConfigJSONGet()
     server->send(200, "application/json", response);
 }
 
-void ESPToolsClass::handleConfigGET()
+void ESPHelpersClass::handleConfigGET()
 {
     server->send(200, "text/html", FPSTR(CONFIG_HTML));
 }
 
-void ESPToolsClass::handleConfigPOST()
+void ESPHelpersClass::handleConfigPOST()
 {
     for (std::pair<const String, String> pair : config)
     {
@@ -150,12 +150,12 @@ void ESPToolsClass::handleConfigPOST()
     server->send(302, "text/plain", "");
 }
 
-void ESPToolsClass::log(String message)
+void ESPHelpersClass::log(String message)
 {
     Serial.println("[ESPTools] " + message);
 }
 
-void ESPToolsClass::wifiAutoConnect()
+void ESPHelpersClass::wifiAutoConnect()
 {
     addConfigString("ssid");
     addConfigString("password");
@@ -215,4 +215,4 @@ void ESPToolsClass::wifiAutoConnect()
     }
 }
 
-ESPToolsClass ESPTools;
+ESPHelpersClass ESPHelpers;
