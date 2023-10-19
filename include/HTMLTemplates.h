@@ -1,8 +1,8 @@
 #ifndef __HTMLTemplates__
 #define __HTMLTemplates__
-#include<pgmspace.h>
+#include <pgmspace.h>
 
-const char CONFIG_HTML[] PROGMEM = 
+const char CONFIG_HTML[] PROGMEM =
     R"(<!DOCTYPE html>
 <html lang='en'>
 
