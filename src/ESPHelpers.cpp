@@ -154,6 +154,10 @@ void ESPHelpersClass::handleConfigPOST()
     for (std::pair<const String, String> pair : config)
     {
         config[pair.first] = server->arg(pair.first);
+        if (pair.first == "mqtt_server")
+        {
+            mqttServerChanged = true;
+        }
     }
 
     saveConfig();
@@ -164,7 +168,7 @@ void ESPHelpersClass::handleConfigPOST()
 
 void ESPHelpersClass::log(String message)
 {
-    Serial.println("[ESPTools] " + message);
+    Serial.println("[ESPHelpers] " + message);
 }
 
 void ESPHelpersClass::wifiAutoConnect()
@@ -240,6 +244,28 @@ void ESPHelpersClass::wifiCheck()
             wifiAutoConnect();
         }
     }
+}
+
+void ESPHelpersClass::enableMQTT()
+{
+    WiFiClient wifiClient;
+    mqtt.setClient(wifiClient);
+    addConfigString("mqtt_server");
+}
+
+void ESPHelpersClass::mqttLoop()
+{
+    if (!mqtt.connected() && config["mqtt_server"] != "" && WiFi.status() == WL_CONNECTED)
+    {
+        mqttReconnect(mqtt, config["mqtt_server"]);
+    } 
+    else if (mqttServerChanged)
+    {
+        mqttServerChanged = false;
+        log("Reconnecting MQTT because of server change");
+        mqttReconnect(mqtt, config["mqtt_server"]);
+    }
+    mqtt.loop();
 }
 
 ESPHelpersClass ESPHelpers;

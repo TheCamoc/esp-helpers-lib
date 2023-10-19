@@ -20,6 +20,7 @@ Compatible with ESP8266 and ESP32 using Arduino and PlatformIO
 #include <ESPHelpers.h>
 
 ESP8266WebServer server(80);
+unsigned long last_mqtt_message = 0;
 
 void setup()
 {
@@ -41,6 +42,9 @@ void setup()
   // the password has to be min 8, max 64 characters
   ESPHelpers.wifiAutoConnect("secretpassword"); 
   
+  // Enable MQTT management, adding a mqtt_server option to the config
+  ESPHelpers.enableMQTT()
+
   // Setup HTTP firmware updates, accessible on path /update
   ESPHelpers.setupHTTPUpdates();
   
@@ -55,10 +59,19 @@ void loop()
     // Check if WiFi has been disconnected for more than 4 minutes
     // if yes, reopen AP and Captive Portal to let users change Credentials
     ESPHelpers.wifiCheck();
+
+    // Loop needed for mqtt to work, will also automatically reconnect if needed
+    ESPHelpers.mqttLoop();
     
     // Access current value of option and output it
-    Serial.println(ESPTools.config["configOption"]);
-    
+    Serial.println(ESPHelpers.config["configOption"]);
+
+    // Send MQTT Message every 10 seconds
+    if (ESPHelpers.mqtt.connected() && (last_mqtt_message + 10 * 1000) <= millis()) {
+        last_mqtt_message = millis();
+        ESPHelpers.mqtt.publish("topic", ESPHelpers.config["configOption"].c_str());
+    }
+
     delay(100);
 }
 ```

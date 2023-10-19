@@ -5,10 +5,12 @@
 #include <LittleFS.h>
 #include <string>
 #include <map>
+#include <WiFiClient.h>
 #include <WifiManagement.h>
 #include <UpdateManagement.h>
 #include <DNSServer.h>
 #include <HTMLTemplates.h>
+#include <MQTTManagement.h>
 
 #ifdef ESP8266
 #include <ESP8266WebServer.h>
@@ -32,9 +34,12 @@ public:
     void addConfigString(String name);
     void wifiAutoConnect();
     void wifiCheck();
+    void enableMQTT();
+    void mqttLoop();
     void setupHTTPUpdates();
 
     std::map<String, String> config;
+    PubSubClient mqtt;
 
 private:
 #ifdef ESP8266
@@ -54,6 +59,8 @@ private:
 
     String wifiAPPassword = "";
     unsigned long wifiLastConnected = 0;
+
+    bool mqttServerChanged = false;
 };
 
 extern ESPHelpersClass ESPHelpers;
