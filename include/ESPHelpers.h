@@ -21,9 +21,9 @@ class ESPHelpersClass
 {
 public:
 #ifdef ESP8266
-    void begin(ESP8266WebServer *server);
+    void begin(ESP8266WebServer *server, String wifiAPPassword = "");
 #elif ESP32
-    void begin(WebServer *server);
+    void begin(WebServer *server, String wifiAPPassword = "");
 #endif
 
     int loadConfig();
@@ -31,6 +31,7 @@ public:
     void deleteConfig();
     void addConfigString(String name);
     void wifiAutoConnect();
+    void wifiCheck();
     void setupHTTPUpdates();
 
     std::map<String, String> config;
@@ -44,11 +45,15 @@ private:
     WebServer *server;
     fs::LittleFSFS fs = LittleFS;
 #endif
+
     void handleConfigJSONGet();
     void handleConfigGET();
     void handleConfigPOST();
     void log(String message);
     void setupFS();
+
+    String wifiAPPassword = "";
+    unsigned long wifiLastConnected = 0;
 };
 
 extern ESPHelpersClass ESPHelpers;

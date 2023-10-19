@@ -1,11 +1,23 @@
 #include <ESPHelpers.h>
 
 #ifdef ESP8266
-void ESPHelpersClass::begin(ESP8266WebServer *s)
+void ESPHelpersClass::begin(ESP8266WebServer *s, String apPassword = "")
 #elif ESP32
-void ESPHelpersClass::begin(WebServer *s)
+void ESPHelpersClass::begin(WebServer *s, String apPassword = "")
 #endif
 {
+    wifiAPPassword = apPassword;
+    if (apPassword.length() > 0 && apPassword.length() < 8)
+    {
+        log("WiFi AP Password too short for WPA2, defaulting to no password");
+        wifiAPPassword = "";
+    }
+    else if (apPassword.length() > 64)
+    {
+        log("WiFi AP Password too long, defaulting to no password");
+        wifiAPPassword = "";
+    }
+
     setupFS();
     loadConfig();
 
@@ -173,7 +185,7 @@ void ESPHelpersClass::wifiAutoConnect()
 
     log("Starting AP and Captive Portal");
 
-    enableAP();
+    enableAP(wifiAPPassword);
     // Captive Portal Stuff
     DNSServer dnsServer;
     dnsServer.start(53, "*", IPAddress(172, 0, 0, 1));
@@ -209,8 +221,23 @@ void ESPHelpersClass::wifiAutoConnect()
             }
             else
             {
-                enableAP();
+                enableAP(wifiAPPassword);
             }
+        }
+    }
+}
+
+void ESPHelpersClass::wifiCheck()
+{
+    if (WiFi.status() == WL_CONNECTED)
+    {
+        wifiLastConnected = millis();
+    }
+    else
+    {
+        if ((wifiLastConnected + 240 * 1000) <= millis())
+        {
+            wifiAutoConnect();
         }
     }
 }

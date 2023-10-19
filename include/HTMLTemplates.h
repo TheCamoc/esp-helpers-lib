@@ -85,7 +85,11 @@ const char CONFIG_HTML[] PROGMEM =
 
     function populateForm(jsonData) {
         for (let key in jsonData) {
-            form.innerHTML += `<label for="${key}">${key}</label><input type='text' name='${key}' id='${key}' value='${jsonData[key]}'>`;
+            if (key == "password") {
+                form.innerHTML += `<label for="${key}">${key}</label><input type='password' name='${key}' id='${key}' value='${jsonData[key]}'>`;
+            } else {
+                form.innerHTML += `<label for="${key}">${key}</label><input type='text' name='${key}' id='${key}' value='${jsonData[key]}'>`;
+            }
         }
         form.innerHTML += "<input type='submit' value='Save'>";
     }

@@ -8,7 +8,7 @@
 #endif
 
 bool wifiConnect(String ssid, String password, String hostname, int timeoutms);
-void enableAP();
+void enableAP(String apPassword);
 void trySetHostname(String hostname);
 
 #endif
